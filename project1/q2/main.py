@@ -1,4 +1,3 @@
-import numpy as np
 import math
 
 def fk(theta1, theta2):
@@ -14,11 +13,11 @@ def fk(theta1, theta2):
     a1 = 1.0
     a2 = 1.0
     
-    x = a1 * np.cos(theta1) + a2 * np.cos(theta1 + theta2)
-    y = a1 * np.sin(theta1) + a2 * np.sin(theta1 + theta2)
+    x = a1 * math.cos(theta1) + a2 * math.cos(theta1 + theta2)
+    y = a1 * math.sin(theta1) + a2 * math.sin(theta1 + theta2)
     theta = theta1 + theta2
     
-    return float(x), float(y), float(theta)
+    return x, y, theta
 
 def ik(x, y):
     """
@@ -47,15 +46,15 @@ def ik(x, y):
         raise ValueError("Posição não alcançável, fora do espaço de trabalho do robô.")
     
     # Duas possíveis soluções: escolhemos sin positivo (elbow-up)
-    sin_theta2 = np.sqrt(1 - cos_theta2**2)  
-    theta2 = np.arctan2(sin_theta2, cos_theta2)
+    sin_theta2 = math.sqrt(1 - cos_theta2**2)  
+    theta2 = math.atan2(sin_theta2, cos_theta2)
 
     # Cálculo de theta1
-    numerator = a2 * sin_theta2
-    denominator = a1 + a2 * cos_theta2
-    theta1 = np.arctan2(y, x) - np.arctan2(numerator, denominator)
+    numerator = a2 * math.sin(theta2)
+    denominator = a1 + a2 * math.cos(theta2)
+    theta1 = math.atan2(y, x) - math.atan2(numerator, denominator)
 
-    return float(theta1), float(theta2)
+    return theta1, theta2
 
 # Exemplo de uso
 if __name__ == "__main__":

@@ -6,20 +6,33 @@ This repository contains the projects developed for the Robotics course at CIn-U
 
 ## Project Structure
 
-The repository is organized into two main projects:
+The repository is organized into projects, each containing one or more questions:
 
-### Project 1: 2D Robotic Arm Transformations
-Located in `projects/p1/`, this project implements:
+```
+.
+├── project1/
+│   ├── q1/                    # Question 1: 2D Transformations
+│   │   └── main.py           # SE2 transformations implementation
+│   └── q2/                    # Question 2: Robotic Arm
+│       └── main.py           # FK/IK implementation
+├── env_project/               # Virtual environment (not tracked)
+├── .gitignore
+└── README.md
+```
 
-1. **2D Homogeneous Transformation Matrices**
-   - Implementation of SE(2) transformations for translation and rotation
-   - Functions for coordinate frame transformations
-   - Test cases for different reference frame scenarios
+### Project 1: 2D Robotic Arm Control
 
-2. **Planar Robotic Arm with Two Rotational Joints**
-   - Forward Kinematics (FK) implementation
-   - Inverse Kinematics (IK) implementation
-   - Simulation with link lengths a1 = a2 = 1m
+#### Question 1: 2D Homogeneous Transformations
+Located in `project1/q1/`, this implementation includes:
+- SE(2) transformations for translation and rotation
+- Functions for coordinate frame transformations
+- Test cases for different reference frame scenarios
+
+#### Question 2: Planar Robotic Arm with Two Rotational Joints
+Located in `project1/q2/`, this implementation includes:
+- Forward Kinematics (FK) implementation
+- Inverse Kinematics (IK) implementation
+- Simulation with link lengths a1 = a2 = 1m
 
 ### Project 2: TBD
 Details will be added when the second project is assigned.
@@ -76,16 +89,21 @@ deactivate
 
 ## Usage
 
-With the virtual environment activated:
+With the virtual environment activated, you can run each question's implementation:
 
 ```bash
-cd projects/p1
+# For Question 1 (2D Transformations)
+cd project1/q1
+python main.py
+
+# For Question 2 (Robotic Arm)
+cd project1/q2
 python main.py
 ```
 
-## Project 1 Details
+## Implementation Details
 
-### Implemented Functions
+### Question 1: 2D Transformations
 
 1. **SE2_xy(x, y)**
    - Creates a 2D homogeneous transformation matrix for translation
@@ -100,14 +118,16 @@ python main.py
      - theta: rotation angle around origin (radians)
    - Returns: 3x3 homogeneous transformation matrix
 
-3. **Forward Kinematics (fk)**
+### Question 2: Robotic Arm
+
+1. **Forward Kinematics (fk)**
    - Calculates end-effector position and orientation
    - Parameters:
      - theta1: first joint angle (radians)
      - theta2: second joint angle (radians)
    - Returns: (x, y, theta) coordinates and orientation
 
-4. **Inverse Kinematics (ik)**
+2. **Inverse Kinematics (ik)**
    - Calculates joint angles for desired end-effector position
    - Parameters:
      - x: desired x-coordinate (meters)

@@ -35,32 +35,38 @@ def transform(xi,theta, p, inv: bool = False):
     p_hom = np.array([p[0], p[1], 1.0])
     return T @ p_hom
 
+
+
+
+
 # === TESTES ===
 
-#1
-xi = (1, 0.25)
-theta = 0
-p = (0.5, 0.5)
-result = transform(xi, theta, p)
-print(f"Resultado Teste 1: ({result[0]},{result[1]})")
+def runTests1():
+    #1
+    xi = (1, 0.25)
+    theta = 0
+    p = (0.5, 0.5)
+    result = transform(xi, theta, p)
+    print(f"Resultado Teste 1: ({result[0]},{result[1]})")
 
-#2
-xi = (-1, -0.25)
-theta = 0
-p = (0.5, 0.5)
-result = transform(xi, theta, p)
-print(f"Resultado Teste 2: ({result[0]},{result[1]})")
+    #2
+    xi = (-1, -0.25)
+    theta = 0
+    p = (0.5, 0.5)
+    result = transform(xi, theta, p)
+    print(f"Resultado Teste 2: ({result[0]},{result[1]})")
 
-#3
-xi = (1, 0.25)
-theta = 45
-p = (0.5, 0.5)
-result = transform(xi, theta, p)
-print(f"Resultado Teste 3: ({result[0]},{result[1]})")
+    #3
+    xi = (1, 0.25)
+    theta = 45
+    p = (0.5, 0.5)
+    result = transform(xi, theta, p)
+    print(f"Resultado Teste 3: ({result[0]},{result[1]})")
 
-#4
-xi = (1, 0.25)
-theta = 45
-p = (0.5, 0.5)
-result = transform(xi, theta, p, True)
-print(f"Resultado Teste 4: ({result[0]},{result[1]})")
+    #4
+    xi = (1, 0.25)
+    theta = 45
+    p = (0.5, 0.5)
+    result = transform(xi, theta, p, True)
+    print(f"Resultado Teste 4: ({result[0]},{result[1]})")
+

@@ -9,6 +9,7 @@ def SE2_xy(x,y):
     return H
 
 def SE2_theta(theta):
+    theta = np.radians(theta)
     cos = np.cos(theta)
     sin = np.sin(theta)
     H = np.array([[cos,-sin, 0],
@@ -25,8 +26,7 @@ def SE2_theta(theta):
     # return: matriz de coordenadas transformada
 
 def transform(xi,theta, p, inv: bool = False):
-    t = math.radians(theta)
-    R = SE2_theta(t)
+    R = SE2_theta(theta)
     T = SE2_xy(xi[0], xi[1]) @ R
 
     if(inv):

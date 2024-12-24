@@ -9,7 +9,6 @@ def SE2_xy(x,y):
     return H
 
 def SE2_theta(theta):
-    theta = np.radians(theta)
     cos = np.cos(theta)
     sin = np.sin(theta)
     H = np.array([[cos,-sin, 0],
@@ -19,7 +18,7 @@ def SE2_theta(theta):
 
 # Função auxiliar
     # xi: posição relativa [vetor (x,y)]
-    # theta: Angulo de rotação 
+    # theta: Angulo de rotação (rad)
     # p: ponto p no plano conhecido [vetor (x,y)]
     # in: Se deve calcular a inversa
 
@@ -41,7 +40,7 @@ def fk(theta1, theta2):
     a = 1
 
     E = SE2_theta(theta1) @ SE2_xy(a,0) @ SE2_theta(theta2) @ SE2_xy(a, 0)
-    return E[0][2], E[1][2], math.radians(theta1+theta2)
+    return E[0][2], E[1][2], theta1+theta2
 
 
 # === TESTES ===
@@ -63,21 +62,24 @@ def runTests1():
 
     #3
     xi = (1, 0.25)
-    theta = 45
+    theta = math.pi/4
     p = (0.5, 0.5)
     result = transform(xi, theta, p)
     print(f"Resultado Teste 3: ({result[0]},{result[1]})")
 
     #4
     xi = (1, 0.25)
-    theta = 45
+    theta = math.pi/4
     p = (0.5, 0.5)
     result = transform(xi, theta, p, True)
     print(f"Resultado Teste 4: ({result[0]},{result[1]})")
 
 def runTests2():
-    print(fk(0,90))
-    print(fk(90,90))
-    print(fk(90,-90))
-    print(fk(-180,180))
+    print(fk(0,math.pi/2))
+    print(fk(math.pi/2,math.pi/2))
+    print(fk(math.pi/2,-math.pi/2))
+    print(fk(-math.pi,math.pi))
+
+runTests2()
+runTests1()
 

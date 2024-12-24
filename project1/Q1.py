@@ -36,7 +36,12 @@ def transform(xi,theta, p, inv: bool = False):
     return T @ p_hom
 
 
+def fk(theta1, theta2):
+    # tamanho dos dois links a = 1
+    a = 1
 
+    E = SE2_theta(theta1) @ SE2_xy(a,0) @ SE2_theta(theta2) @ SE2_xy(a, 0)
+    return E[0][2], E[1][2], math.radians(theta1+theta2)
 
 
 # === TESTES ===

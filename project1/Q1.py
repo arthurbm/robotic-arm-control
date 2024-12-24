@@ -75,3 +75,9 @@ def runTests1():
     result = transform(xi, theta, p, True)
     print(f"Resultado Teste 4: ({result[0]},{result[1]})")
 
+def runTests2():
+    print(fk(0,90))
+    print(fk(90,90))
+    print(fk(90,-90))
+    print(fk(-180,180))
+

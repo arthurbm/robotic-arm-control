@@ -48,10 +48,9 @@ def ik(x,y):
 
     r2 = x**2 + y**2
     cos_theta2 = (r2 - (a**2 + a**2)) / (2 * a * a)
-    
     # Checa se o valor é possível
     if cos_theta2 < -1.0 or cos_theta2 > 1.0:
-        raise ValueError("Posição inválida.")
+        return "Posição inválida."
     
     sin_theta2 = math.sqrt(1 - cos_theta2**2)  
     theta2 = math.atan2(sin_theta2, cos_theta2)
@@ -66,6 +65,7 @@ def ik(x,y):
 # === TESTES ===
 
 def runTests1():
+    print("\n=== Início dos testes Q1 ===")
     #1
     xi = (1, 0.25)
     theta = 0
@@ -94,11 +94,25 @@ def runTests1():
     result = transform(xi, theta, p, True)
     print(f"Resultado Teste 4: ({result[0]},{result[1]})")
 
+    print("=== Fim dos testes Q1 ===\n")
+
 def runTests2():
-    print(fk(0,math.pi/2))
-    print(fk(math.pi/2,math.pi/2))
-    print(fk(math.pi/2,-math.pi/2))
-    print(fk(-math.pi,math.pi))
+    print("\n=== Início dos testes Q2 ===")
+    print("Testes de FK:")
+    print(f"fk(0,pi/2): {fk(0,math.pi/2)}")
+    print(f"fk(pi/2,pi/2): {fk(math.pi/2,math.pi/2)}")
+    print(f"fk(pi/2,-pi/2): {fk(math.pi/2,-math.pi/2)}")
+    print(f"fk(-pi,pi): {fk(-math.pi,math.pi)}")
+    print("Testes de IK:")
+    print(f"ik(1,1): {ik(1,1)}")
+    print(f"ik(1,-1): {ik(1,-1)}")
+    print(f"ik(-1,1): {ik(-1,1)}")
+    print(f"ik(-1,-1): {ik(-1,-1)}")
+    print(f"ik(2,1): {ik(2,1)}")
+    print(f"ik(2,0): {ik(2,0)}")
+    print(f"ik(0,2): {ik(0,2)}")
+    print(f"ik(-2,0): {ik(-2,0)}")
+    print("=== Fim dos testes Q2 ===\n")
 
 runTests1()
 runTests2()

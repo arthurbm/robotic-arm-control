@@ -1,5 +1,3 @@
-# file: q3_merged.py
-
 import numpy as np
 import math
 import roboticstoolbox as rtb
@@ -10,7 +8,6 @@ TS = 11        # Number of discrete samples (steps)
 V_MAX = 1.0
 A_MAX = 1.0
 
-# Helper function for joint-space trapezoid
 def get_q_vector(t, t_total, t_acc, t_cte, q_init, delta):
     """
     Returns the position array for one joint, given:
@@ -70,7 +67,6 @@ def traj_joint(theta1_init, theta2_init, theta1_final, theta2_final):
     t_acc1, t_cte1 = calc_times(d1)
     t_acc2, t_cte2 = calc_times(d2)
 
-    # Compute total time for each joint
     t_total1 = 2*t_acc1 + t_cte1
     t_total2 = 2*t_acc2 + t_cte2
     t_total = max(t_total1, t_total2)
@@ -84,7 +80,6 @@ def traj_joint(theta1_init, theta2_init, theta1_final, theta2_final):
     # Time array: we have TS discrete steps in [0, t_total]
     t = np.linspace(0, t_total, TS)
 
-    # Generate the position arrays for each joint
     q1 = get_q_vector(t, t_total, t_acc1, t_cte1, theta1_init, d1)
     q2 = get_q_vector(t, t_total, t_acc2, t_cte2, theta2_init, d2)
 
@@ -144,10 +139,7 @@ def traj_eucl(x_init, y_init, x_final, y_final):
     return path_q
 
 if __name__ == "__main__":
-    # Create 2R robot
     robot = rtb.models.DH.Planar2()
-
-    # Ask user which trajectory to plot
     print("Choose a trajectory to visualize:")
     print("[1] Joint-space trajectory (ex.: from (0,60°) to (0,30°))")
     print("[2] Euclidian-space trajectory (ex.: from (0,0) to (1,1))")

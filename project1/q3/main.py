@@ -1,101 +1,173 @@
+# file: q3_merged.py
+
 import numpy as np
 import math
-# from ..q1.main import SE2_theta, SE2_xy
-# from ..q2.main import ik,fk
 import roboticstoolbox as rtb
+from ..q2.main import ik
 
-TS = 11 
+# Global parameters
+TS = 11        # Number of discrete samples (steps)
 V_MAX = 1.0
 A_MAX = 1.0
-T_ACC_MAX = V_MAX/A_MAX
-D_ACC = (A_MAX*(T_ACC_MAX**2))/2
 
-def get_q_vector(t, t_total, t_acc, t_cte, theta_inicial, delta):
+# Helper function for joint-space trapezoid
+def get_q_vector(t, t_total, t_acc, t_cte, q_init, delta):
+    """
+    Returns the position array for one joint, given:
+      t: time array
+      t_total: total motion time
+      t_acc: time spent accelerating
+      t_cte: time at constant velocity
+      q_init: initial angle
+      delta: total angle change (final - initial)
+    """
     q = np.zeros_like(t)
+    t_deacc = t_acc + t_cte  # time we start decelerating
+    d_acc = 0.5 * A_MAX * (t_acc**2)
+    v_now = A_MAX * t_acc
 
-    t_deacc = t_acc + t_cte
-    d_acc = (A_MAX*(t_acc**2))/2
-    v_atual = A_MAX*t_acc
-
-    for i, time in enumerate(t):
-        if(time <= t_acc): # Acelerando
-            q[i] = theta_inicial + 0.5* (A_MAX*(time**2)) * np.sign(delta)
-        elif(time > t_acc and time < t_deacc): # Velocidade constante
-            q[i] = theta_inicial + (d_acc + v_atual * (time-t_acc)) * np.sign(delta)
-        elif(time >= t_deacc): # Desacelerando
-            t_dacc = t_total - time
-            q[i] = (delta +theta_inicial) - ( + 0.5* (A_MAX*(t_dacc**2))) * np.sign(delta)
-    
+    for i, ti in enumerate(t):
+        if ti <= t_acc:  
+            # Acceleration phase
+            q[i] = q_init + 0.5 * A_MAX * (ti**2) * np.sign(delta)
+        elif ti <= t_deacc:
+            # Constant velocity phase
+            q[i] = q_init + (d_acc + v_now * (ti - t_acc)) * np.sign(delta)
+        else:
+            # Deceleration phase
+            t_left = t_total - ti
+            # from final => minus deceleration from v=0
+            q[i] = (q_init + delta) - 0.5 * A_MAX * (t_left**2) * np.sign(delta)
     return q
 
-
 def traj_joint(theta1_init, theta2_init, theta1_final, theta2_final):
-    # Distâncias a percorrer
+    """
+    Joint-space trajectory that ensures both joints finish at the same time.
+    Follows a trapezoid approach with possible constant-velocity phase.
+    """
+    # Distances to move for each joint
     d1 = theta1_final - theta1_init
     d2 = theta2_final - theta2_init
-    
-    # Tempo necessário para atingir V_MAX com aceleração constante
-    #     
-    # Verificar se é possível atingir V_MAX ou apenas acelerar/desacelerar
-    if d1 < 2 * D_ACC:
-        # q1 não atinge V_MAX: resolve para nova aceleração limitada
-        t_acc1 = np.sqrt(abs(d1) / A_MAX)
-        t_cte1 = 0
-    else:
-        # q1 atinge V_MAX
-        t_acc1 = T_ACC_MAX
-        d_cte1 = d1 - 2 * D_ACC
-        t_cte1 = d_cte1 / V_MAX
-    
-    if d2 < 2 * D_ACC:
-        # q2 não atinge V_MAX
-        t_acc2 = np.sqrt(abs(d2) / A_MAX)
-        t_cte2 = 0
-    else:
-        # q2 atinge V_MAX
-        t_acc2 = T_ACC_MAX
-        d_cte2 = d2 - 2 * D_ACC
-        t_cte2 = d_cte2 / V_MAX
-    
-    # Tempo total de viagem para cada junta
-    t_total1 = 2 * t_acc1 + t_cte1
-    t_total2 = 2 * t_acc2 + t_cte2
-    
-    # Ajustar para que ambas cheguem ao mesmo tempo
+
+    # Time to accelerate from 0 to V_MAX
+    t_acc_max = V_MAX / A_MAX
+    d_acc_max = 0.5 * A_MAX * (t_acc_max**2)  # distance covered in acc or dec
+
+    # For each joint, check if it can reach V_MAX or not
+    def calc_times(d):
+        dist_abs = abs(d)
+        if dist_abs < 2 * d_acc_max:
+            # No constant velocity phase
+            t_acc = math.sqrt(dist_abs / A_MAX)
+            t_cte = 0
+        else:
+            # We reach V_MAX
+            t_acc = t_acc_max
+            dist_cte = dist_abs - 2*d_acc_max
+            t_cte = dist_cte / V_MAX
+        return t_acc, t_cte
+
+    t_acc1, t_cte1 = calc_times(d1)
+    t_acc2, t_cte2 = calc_times(d2)
+
+    # Compute total time for each joint
+    t_total1 = 2*t_acc1 + t_cte1
+    t_total2 = 2*t_acc2 + t_cte2
     t_total = max(t_total1, t_total2)
+
+    # Extend the shorter motion to match total time
     if t_total1 < t_total:
-        t_cte1 += t_total - t_total1
-    elif t_total2 < t_total:
-        t_cte2 += t_total - t_total2  
+        t_cte1 += (t_total - t_total1)
+    if t_total2 < t_total:
+        t_cte2 += (t_total - t_total2)
 
-    t = np.arange(0, t_total, (t_total)/TS)    
+    # Time array: we have TS discrete steps in [0, t_total]
+    t = np.linspace(0, t_total, TS)
 
-    # print(f"d1 {d1}")
-    # print(f"d2 {d2}")
-    # print(f"t_acc {t_acc1},       {t_acc2}")
-    # print(f"t_cte {t_cte1},       {t_cte2}")
-    # print(f"t_total {t_total}")
-    # print(t)
-
+    # Generate the position arrays for each joint
     q1 = get_q_vector(t, t_total, t_acc1, t_cte1, theta1_init, d1)
     q2 = get_q_vector(t, t_total, t_acc2, t_cte2, theta2_init, d2)
 
-    return np.column_stack((q1,q2))
+    return np.column_stack((q1, q2))
 
 def traj_eucl(x_init, y_init, x_final, y_final):
+    """
+    Euclidian-space trajectory. Moves from (x_init,y_init) to (x_final,y_final)
+    along a straight line. For simplicity, we match the same TS steps and unify time 
+    for the motion. It uses the same approach of finishing in t_total.
+    """
+    dx = x_final - x_init
+    dy = y_final - y_init
+    dist = math.hypot(dx, dy)
 
-    return
+    if dist < 1e-9:
+        # No movement
+        t1, t2 = ik(x_init, y_init)
+        return np.array([[t1, t2]])
+    
+    # We'll compute the total motion time in the same style as the joint approach
+    t_acc_max = V_MAX / A_MAX
+    d_acc_max = 0.5 * A_MAX * (t_acc_max**2)
 
-# Create the RR robot object
-robot = rtb.models.DH.Planar2 ()
+    # Check if we reach V_MAX in the linear path or not
+    if dist < 2*d_acc_max:
+        t_acc = math.sqrt(dist / A_MAX)
+        t_cte = 0
+    else:
+        t_acc = t_acc_max
+        dist_cte = dist - 2*d_acc_max
+        t_cte = dist_cte / V_MAX
 
-t1_inicial = np.radians(0)
-t2_inicial = np.radians(60)
-t1_final = np.radians(00)
-t2_final = np.radians(30)
+    t_total = 2*t_acc + t_cte
+    t = np.linspace(0, t_total, TS)
 
-qt = traj_joint(t1_inicial,t2_inicial,t1_final,t2_final)
-# print(qt)
+    # In each phase, param s(t) is how far along the path we are from x_init,y_init
+    # We'll build s(t) similarly to get_q_vector, but simpler since it's 1D
+    s = np.zeros_like(t)
+    for i, ti in enumerate(t):
+        if ti <= t_acc:
+            s[i] = 0.5 * A_MAX * (ti**2)
+        elif ti <= t_acc + t_cte:
+            s[i] = d_acc_max + V_MAX * (ti - t_acc)
+        else:
+            t_left = t_total - ti
+            s[i] = dist - 0.5 * A_MAX * (t_left**2)
 
-# Visualize the trajectory
-robot . plot ( qt , backend = 'pyplot' , movie = 'RR.gif')
+    # Now convert each point (px, py) to joint angles
+    path_q = np.zeros((TS, 2))
+    for i, si in enumerate(s):
+        frac = si / dist
+        px = x_init + dx * frac
+        py = y_init + dy * frac
+        t1, t2 = ik(px, py)
+        path_q[i] = [t1, t2]
+    return path_q
+
+if __name__ == "__main__":
+    # Create 2R robot
+    robot = rtb.models.DH.Planar2()
+
+    # Ask user which trajectory to plot
+    print("Choose a trajectory to visualize:")
+    print("[1] Joint-space trajectory (ex.: from (0,60°) to (0,30°))")
+    print("[2] Euclidian-space trajectory (ex.: from (0,0) to (1,1))")
+    choice = input("Enter your choice (1/2): ")
+
+    if choice == '1':
+        # Example: from t1=0°, t2=60° to t1=0°, t2=30°
+        t1_init = math.radians(0)
+        t2_init = math.radians(60)
+        t1_final = math.radians(0)
+        t2_final = math.radians(30)
+        qj = traj_joint(t1_init, t2_init, t1_final, t2_final)
+        print("Joint-space shape:", qj.shape)
+        robot.plot(qj, backend='pyplot', movie='joint_space.gif')
+
+    elif choice == '2':
+        # Euclidian from (0,0) to (1,1)
+        qe = traj_eucl(0, 0, 1, 1)
+        print("Euclidian-space shape:", qe.shape)
+        robot.plot(qe, backend='pyplot', movie='eucl_space.gif')
+
+    else:
+        print("Invalid choice. Exiting.")

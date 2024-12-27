@@ -13,8 +13,10 @@ The repository is organized into projects, each containing one or more questions
 ├── project1/
 │   ├── q1/                    # Question 1: 2D Transformations
 │   │   └── main.py           # SE2 transformations implementation
-│   └── q2/                    # Question 2: Robotic Arm
-│       └── main.py           # FK/IK implementation
+│   ├── q2/                    # Question 2: Robotic Arm
+│   │   └── main.py           # FK/IK implementation
+│   └── q3/                    # Question 3: Trajectory Planning
+│       └── main.py           # Joint and Euclidean space trajectories
 ├── env_project/               # Virtual environment (not tracked)
 ├── .gitignore
 └── README.md
@@ -34,15 +36,24 @@ Located in `project1/q2/`, this implementation includes:
 - Inverse Kinematics (IK) implementation
 - Simulation with link lengths a1 = a2 = 1m
 
+#### Question 3: Trajectory Planning
+Located in `project1/q3/`, this implementation includes:
+- Joint-space trajectory planning with trapezoidal velocity profile
+- Euclidean-space trajectory planning with straight-line motion
+- Visualization using Robotics Toolbox
+- Motion constraints (maximum velocity and acceleration)
+- Interactive trajectory visualization with GIF generation
+
 ### Project 2: TBD
 Details will be added when the second project is assigned.
 
 ## Dependencies
 
-The project uses minimal dependencies to focus on fundamental implementations:
+The project uses the following dependencies:
 - Python 3.x
 - NumPy
 - Math (Python standard library)
+- Robotics Toolbox (`roboticstoolbox-python`) - for visualization
 
 ## Setup and Installation
 
@@ -78,7 +89,7 @@ python -m venv env_project
 ### 3. Install Dependencies
 With the virtual environment activated (you should see `(env_project)` in your terminal):
 ```bash
-pip install numpy
+pip install numpy roboticstoolbox-python
 ```
 
 ### 4. Deactivating the Virtual Environment
@@ -98,6 +109,10 @@ python main.py
 
 # For Question 2 (Robotic Arm)
 cd project1/q2
+python main.py
+
+# For Question 3 (Trajectory Planning)
+cd project1/q3
 python main.py
 ```
 
@@ -134,6 +149,28 @@ python main.py
      - y: desired y-coordinate (meters)
    - Returns: (theta1, theta2) joint angles
 
+### Question 3: Trajectory Planning
+
+1. **Joint Space Trajectory (traj_joint)**
+   - Plans a trajectory in joint space with trapezoidal velocity profile
+   - Parameters:
+     - theta1_init, theta2_init: initial joint angles
+     - theta1_final, theta2_final: final joint angles
+   - Returns: Array of joint configurations over time
+
+2. **Euclidean Space Trajectory (traj_eucl)**
+   - Plans a straight-line trajectory in Euclidean space
+   - Parameters:
+     - x_init, y_init: initial position
+     - x_final, y_final: final position
+   - Returns: Array of joint configurations over time
+
+Both trajectory types:
+- Respect maximum velocity (V_MAX) and acceleration (A_MAX) constraints
+- Generate smooth motion profiles
+- Provide visualization through Robotics Toolbox
+- Export motion as GIF animations
+
 ## Common Issues and Solutions
 
 1. **Virtual Environment Not Activating (Windows)**
@@ -143,6 +180,10 @@ python main.py
 2. **Virtual Environment Not Found**
    - Ensure you're in the project root directory when creating/activating the environment
    - Check if Python is properly installed and added to PATH
+
+3. **Robotics Toolbox Installation Issues**
+   - Make sure you have all required system dependencies installed
+   - Try installing with pip: `pip install roboticstoolbox-python --upgrade`
 
 ## Authors
 

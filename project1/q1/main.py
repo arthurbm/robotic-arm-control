@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-# Questão 1 - Funções de rotação e translação
+# Question 1 - Rotation and Translation Functions
 
 def SE2_xy(x,y):
     H = np.eye(3)
@@ -16,13 +16,13 @@ def SE2_theta(theta):
                    [0,0,1]])  
     return H
 
-# Função auxiliar
-    # xi: posição relativa [vetor (x,y)]
-    # theta: Angulo de rotação (rad)
-    # p: ponto p no plano conhecido [vetor (x,y)]
-    # in: Se deve calcular a inversa
+# Helper Function
+    # xi: relative position [vector (x,y)]
+    # theta: rotation angle (rad)
+    # p: known point p in the plane [vector (x,y)]
+    # inv: whether to calculate the inverse
 
-    # return: matriz de coordenadas transformada
+    # return: transformed coordinate matrix
 
 def transform(xi,theta, p, inv: bool = False):
     R = SE2_theta(theta)
@@ -35,36 +35,36 @@ def transform(xi,theta, p, inv: bool = False):
     return T @ p_hom
 
 def runTests():
-    print("\n=== Início dos testes Q1 ===")
+    print("\n=== Start of Q1 Tests ===")
     #1
     xi = (1, 0.25)
     theta = 0
     p = (0.5, 0.5)
     result = transform(xi, theta, p)
-    print(f"Resultado Teste 1: ({result[0]},{result[1]})")
+    print(f"Test Result 1: ({result[0]},{result[1]})")
 
     #2
     xi = (-1, -0.25)
     theta = 0
     p = (0.5, 0.5)
     result = transform(xi, theta, p)
-    print(f"Resultado Teste 2: ({result[0]},{result[1]})")
+    print(f"Test Result 2: ({result[0]},{result[1]})")
 
     #3
     xi = (1, 0.25)
     theta = math.pi/4
     p = (0.5, 0.5)
     result = transform(xi, theta, p)
-    print(f"Resultado Teste 3: ({result[0]},{result[1]})")
+    print(f"Test Result 3: ({result[0]},{result[1]})")
 
     #4
     xi = (1, 0.25)
     theta = math.pi/4
     p = (0.5, 0.5)
     result = transform(xi, theta, p, True)
-    print(f"Resultado Teste 4: ({result[0]},{result[1]})")
+    print(f"Test Result 4: ({result[0]},{result[1]})")
 
-    print("=== Fim dos testes Q1 ===\n")
+    print("=== End of Q1 Tests ===\n")
 
 if __name__ == "__main__":
     runTests() 

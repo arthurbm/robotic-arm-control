@@ -104,16 +104,13 @@ With the virtual environment activated, you can run each question's implementati
 
 ```bash
 # For Question 1 (2D Transformations)
-cd project1/q1
-python main.py
+python3 -m project1.q1.main
 
 # For Question 2 (Robotic Arm)
-cd project1/q2
-python main.py
+python3 -m project1.q2.main
 
 # For Question 3 (Trajectory Planning)
-cd project1/q3
-python main.py
+python3 -m project1.q3.main
 ```
 
 ## Implementation Details

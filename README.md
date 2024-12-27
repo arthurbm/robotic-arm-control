@@ -184,7 +184,7 @@ Both trajectory types:
 
 ## Authors
 
-- Student: [Your Name]
+- Students: Arthur Brito, Bianca Duarte, Matheus Boncsidai
 - Course: IF826 - Robotics
 - Institution: Centro de Informática, Universidade Federal de Pernambuco (CIn-UFPE)
 - Year: 2024 
